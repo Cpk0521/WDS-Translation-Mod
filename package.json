@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "buildw": "frida-compile -S -o dist/_.js -w src/index.ts",
+    "build": "frida-compile -S -o dist/_.js src/index.ts",
+    "attach": "frida -U \"Gadget\" -l dist/_.js --runtime=v8"
+  },
+  "devDependencies": {
+    "@types/frida-gum": "^19.0.1",
+    "@types/node": "~20.9",
+    "frida-compile": "^19.0.4",
+    "frida-fs": "^7.0.0",
+    "frida-il2cpp-bridge": "^0.12.1",
+    "frida-java-bridge": "^7.0.9",
+    "typescript": "^5.9.3"
+  }
+}

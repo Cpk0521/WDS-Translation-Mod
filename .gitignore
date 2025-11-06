@@ -1,0 +1,17 @@
+# 
+node_modules/
+dist/*
+# 
+frida/*
+!frida/libgadget.config.so
+# 
+apk/*
+!apk/.gitkeep
+# 
+apktool*
+# 
+.memo*
+# 
+*.keystore
+# 
+res
