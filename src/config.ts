@@ -4,13 +4,13 @@ import { isFileExists } from "./utils.js";
 
 interface IConfig {
     isEnableTranslation: boolean;
-    // fontFile: string;
+    // fontName: string;
     TranslationPath: string;
 }
 
 const DEFAULT_CONFIG = {
     isEnableTranslation: true,
-    // fontFile: "HiraginoSansGB.ttf",
+    // fontName: "",
     TranslationPath: "https://raw.githubusercontent.com/DreamGallery/WDS-Translation-Csv/refs/heads/main/TranslationCsv/{EPID}.csv",
 }
 
@@ -19,7 +19,7 @@ export let currentConfig: IConfig = {...DEFAULT_CONFIG};
 export async function init(){
     return new Promise((resolve)=>{
         setTimeout(()=>{
-            // Il2Cpp.perform(()=>{
+            Il2Cpp.perform(()=>{
                 const configPath = `${Il2Cpp.application.dataPath}/il2cpp/Moded/config.json`;
                 if (isFileExists(configPath)){
                     const content : string = fs.readFileSync(configPath, 'utf-8') as string;
@@ -45,7 +45,7 @@ export async function init(){
                     console.log(`Failed to create config file`);
                 }
                 resolve(currentConfig);
-            // });
+            });
         }, 3000)
     })
 }
