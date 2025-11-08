@@ -3,15 +3,17 @@ import "frida-il2cpp-bridge";
 import { isFileExists } from "./utils.js";
 
 interface IConfig {
-    isEnableTranslation: boolean;
-    // fontName: string;
-    TranslationPath: string;
+    isEnableEpisodeTranslation: boolean;
+    isEnableTheaterTranslation: boolean;
+    fontAssetName: string;
+    EpisodeTranslationPath: string;
 }
 
 const DEFAULT_CONFIG = {
-    isEnableTranslation: true,
-    // fontName: "",
-    TranslationPath: "https://raw.githubusercontent.com/DreamGallery/WDS-Translation-Csv/refs/heads/main/TranslationCsv/{EPID}.csv",
+    isEnableEpisodeTranslation: true,
+    isEnableTheaterTranslation : false,
+    fontAssetName: "hiraginosansgb",
+    EpisodeTranslationPath: "https://raw.githubusercontent.com/DreamGallery/WDS-Translation-Csv/refs/heads/main/TranslationCsv/{EPID}.csv",
 }
 
 export let currentConfig: IConfig = {...DEFAULT_CONFIG};
@@ -46,6 +48,6 @@ export async function init(){
                 }
                 resolve(currentConfig);
             });
-        }, 3000)
+        }, 4000)
     })
 }

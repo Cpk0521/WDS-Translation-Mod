@@ -66,6 +66,11 @@ def modfiy_packages(target = dir_base_apk):
     shutil.copy('./frida/libgadget.config.so', os.path.join(dir_base_apk, 'config.arm64_v8a/lib/arm64-v8a', 'libgadget.config.so'))
     shutil.copy('./dist/_.js', os.path.join(dir_base_apk, 'config.arm64_v8a/lib/arm64-v8a', 'libgadget.js.so'))
     
+    ModedFolder = os.path.join(dir_base_apk, 'com.kms.worlddaistar/assets/bin/Data/Managed/Moded')
+    if not os.path.exists(ModedFolder):
+        os.makedirs(ModedFolder)
+    shutil.copy('./res/hiraginosansgb', os.path.join(ModedFolder, 'hiraginosansgb'))
+    
 # Repacking Packages
 def repack_packages(inputdir=dir_base_apk, outputdir=dir_patched_apk):
     print('Starting to repack the packages...')

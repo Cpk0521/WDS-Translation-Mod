@@ -43,7 +43,7 @@ Il2Cpp.perform(() => {
     storyPreprocess.method('GetEpisodeDetailAsync', 2).implementation = function(episodeId : number, cancellationToken : Il2Cpp.Object){
         console.log('GetEpisodeDetailAsync hooked, episodeId: ' + episodeId);
 
-        if(Translation.isEnableTranslation){
+        if(Translation.isEnableEpisodeTranslation){
             Translation.loadAdvTranData(episodeId);
         }
         
@@ -59,15 +59,15 @@ Il2Cpp.perform(() => {
     
     storypre.method('CreateSucceeded', 5).implementation = function(canPlayVoice : boolean, isContinuousPlay : boolean, isAutoPlay : boolean, episodeResult : Il2Cpp.Object, episodeDetailResults : Il2Cpp.Array<Il2Cpp.Object>){
 
-        if(Translation.isEnableTranslation && Translation.hasEpsiodeTranslation){
-            let eptitle = Translation.TranslationCache.find(item => item['Id'].toLowerCase() === 'title');
+        if(Translation.isEnableEpisodeTranslation && Translation.hasEpsiodeTranslation){
+            let eptitle = Translation.EpsiodeTranslationCache.find(item => item['Id'].toLowerCase() === 'title');
             if(eptitle){
                 episodeResult.method('set_EpisodeTitle').invoke(Il2Cpp.string(eptitle["SpeakerName"]));
             }
 
             const reslength = episodeDetailResults.length ?? 0;
             for (let i = 0; i < (reslength ?? 0); i++) {
-                let transItem = Translation.TranslationCache.at(i);
+                let transItem = Translation.EpsiodeTranslationCache.at(i);
                 let detailResult = episodeDetailResults.get(i);
                 if(transItem){
                     detailResult.method('set_SpeakerName').invoke(Il2Cpp.string(transItem['SpeakerName']));; 
@@ -89,10 +89,10 @@ Il2Cpp.perform(() => {
 Il2Cpp.perform(() => {
     const historyDialogBody : Il2Cpp.Class = gameClass.Sirius.class("Sirius.Adventure.AdventureHistoryDialogBody");
     historyDialogBody.method('OnCellViewInstantiated', 2).implementation = function(scroller : Il2Cpp.Object, cellView : Il2Cpp.Object){
-        // if(Translation.isEnableTranslation && Translation.hasEpsiodeTranslation){
-        //     let phrase = cellView.field<Il2Cpp.Object>('_phrase').value;
-        //     Translation.applyFont(phrase)
-        // }
+        if(Translation.isEnableEpisodeTranslation && Translation.hasEpsiodeTranslation){
+            let phrase = cellView.field<Il2Cpp.Object>('_phrase').value;
+            Translation.replaceFont(phrase)
+        }
         this.method('OnCellViewInstantiated').invoke(
             scroller,
             cellView
@@ -104,13 +104,13 @@ Il2Cpp.perform(() => {
     const presenter = gameClass.Sirius.class('Sirius.Adventure.AdventurePresenter');
     presenter.method('.ctor').implementation = function(backgroundChanger, adventureMainView, adventureModel, cameraController, uiView : Il2Cpp.Object, effectView, movieView, fadeView, characterCardView, soundVolumeConfig, voicePlayer, timeAdjuster, backKeyHandler, resolutionHelper, fpsChanger){
         console.log('presenter .ctor Hooked')
-        // if(Translation.isEnableTranslation && Translation.hasEpsiodeTranslation){
-        //     let textpanel = uiView.field<Il2Cpp.Object>('_adventureTextPanel').value;
-        //     let phrase = textpanel.field<Il2Cpp.Object>('_phrase').value;
-        //     // Translation.applyFont(phrase)
-        //     // let speakerName = textpanel.field<Il2Cpp.Object>('_speakerName').value;
-        //     // Translation.applyFont(speakerName)
-        // }
+        if(Translation.isEnableEpisodeTranslation && Translation.hasEpsiodeTranslation){
+            let textpanel = uiView.field<Il2Cpp.Object>('_adventureTextPanel').value;
+            let phrase = textpanel.field<Il2Cpp.Object>('_phrase').value;
+            Translation.replaceFont(phrase)
+            let speakerName = textpanel.field<Il2Cpp.Object>('_speakerName').value;
+            Translation.replaceFont(speakerName)
+        }
         this.method('.ctor').invoke(backgroundChanger, adventureMainView, adventureModel, cameraController, uiView, effectView, movieView, fadeView, characterCardView, soundVolumeConfig, voicePlayer, timeAdjuster, backKeyHandler, resolutionHelper, fpsChanger);
     }
 });

@@ -48,7 +48,15 @@ adb install-multiple base_signed.apk config_signed.apk unity_signed.apk
 配置說明:
 | 名稱 | 說明 |
 |---------------------|---------------------|
-| isEnableTranslation | 是否啟用翻譯。 |
-| TranslationPath | 翻譯csv文件的網址。**`{EPID}`為劇情id，必須填寫並大寫。** |
+| isEnableEpisodeTranslation | 是否啟用**劇情**翻譯。 |
+| isEnableTheaterTranslation | ~~是否啟用**演劇**翻譯。~~(未實現) |
+| fontAssetName | ~~填寫TMP字體包名稱，自定義字體包需用與遊戲版本相同的unity生成並放在`Android/data/包名/files/il2cpp/Moded/`下。~~(未實現)|
+| EpisodeTranslationPath | 翻譯csv文件的網址。**`{EPID}`為劇情id，必須填寫並大寫。** |
+
+
+
+
+
+
 
 

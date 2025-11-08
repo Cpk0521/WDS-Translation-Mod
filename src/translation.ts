@@ -1,61 +1,75 @@
 import "frida-il2cpp-bridge";
 import * as gameClass from './game.js';
 import * as Config from './config.js'
-import { isFileExists } from './utils.js'
+import { SysOpenFile2Byte } from './utils.js'
 
-export let isEnableTranslation : boolean = true;
+export let isEnableEpisodeTranslation : boolean = true;
 
 export let hasEpsiodeTranslation : boolean = false;
-export let TranslationCache: { [key: string]: string }[] = [];
+export let EpsiodeTranslationCache: { [key: string]: string }[] = [];
 
 export let FontCache : Il2Cpp.Object = null;
 export let hasFontAsset : boolean = false;
 
 export async function init(){
-    isEnableTranslation = Config.currentConfig.isEnableTranslation;
+    isEnableEpisodeTranslation = Config.currentConfig.isEnableEpisodeTranslation;
 
-    // Il2Cpp.perform(()=>{
-    //     let fontPath = `${Il2Cpp.application.dataPath}/il2cpp/Moded/${Config.currentConfig.fontFile}`;
-    //     if(isFileExists(fontPath)){
-    //         //GetPathsToOSFonts
-    //         const font_klass = gameClass.TextRenderingModule.class('UnityEngine.Font');
-    //         const createFontFromPath = font_klass.method('Internal_CreateFontFromPath', 2).invoke;
-
-    //         const new_font = font_klass.new();
-    //         new_font.method('.ctor', 1).invoke(Il2Cpp.string(fontPath));
-
-    //         createFontFromPath(new_font, Il2Cpp.string(fontPath));
-    //         console.log(new_font);
-    //         // const new_font = gameClass.TextRenderingModule.class('UnityEngine.Font').new();
-    //         // new_font.method('.ctor', 1).invoke(Il2Cpp.string(fontPath));
-    //         // if(new_font){
-    //         //     FontCache = new_font;
-    //         //     hasFontAsset = true;
-    //         //     console.log('Created New Font !', new_font)
-    //         // }
-    //     }
+    //not working too..
+    // Il2Cpp.perform(() => {
+    //     let fontPath = `${Il2Cpp.application.dataPath}/il2cpp/Moded/${Config.currentConfig.fontAssetName}`;
+    //     SysOpenFile2Byte(fontPath, (bytes : Il2Cpp.Array<UInt64>)=>{
+    //         let abfilebytes = bytes;
+    //         let ab = gameClass.AssetBundle.method<Il2Cpp.Object>("LoadFromMemory").invoke(abfilebytes);
+    //         if (ab.isNull()) {
+    //             console.error("[LoadFromMemory] font load failed.");
+    //             FontCache = null;
+    //         }
+    //         FontCache = ab.method<Il2Cpp.Object>("LoadAsset", 1).inflate(gameClass.TMP_FontAsset).invoke(Il2Cpp.string(`${Config.currentConfig.fontAssetName} SDF`));
+    //         console.log(FontCache);
+    //         ab.method("Unload", 1).invoke(false);
+    //     })
     // })
 }
 
-// export function applyFont(Tmp_Text: Il2Cpp.Object) {
-//     if(!hasFontAsset) return;
-//     // if(FontHooked) return;
-//     //
+// LoadFromFileAsync is not working...
+// export async function loadFont(fontPath : string){
+//     if(gameClass.SysFile.method<boolean>("Exists", 1).invoke(Il2Cpp.string(fontPath))){
+//         console.log('Font Asset Exist *')
+//         let ab_req = gameClass.AssetBundle.method<Il2Cpp.Object>("LoadFromFileAsync", 1).invoke(Il2Cpp.string(fontPath));
+//         while(!ab_req.method('get_isDone').invoke()){
+//             await new Promise(resolve => setTimeout(resolve, 100));
+//         }
+//         console.log('Done! ', ab_req.method('get_isDone').invoke())
+//         let ab = ab_req.method<Il2Cpp.Object>('get_assetBundle').invoke()
+//         if (ab.isNull()){
+//             console.error("Failed to load AssetBundle at path : ", fontPath)
+//         }
     
-//     // Il2Cpp.perform(()=>{
-//     //     const fontAsset = Tmp_Text.method<Il2Cpp.Object>('get_font').invoke();
-//     //     console.log(fontAsset)
-//     //     if(fontAsset) {
-//     //         fontAsset.method('set_sourceFontFile').invoke(FontCache);
-//     //         fontAsset.method('UpdateFontAssetData').invoke()
-//     //     }
-//     //     Tmp_Text.method('set_font').invoke(FontCache);
-
-//     // })
+//     }
+//     else{
+//         console.log("Can not find the File")
+//     }
 // }
 
+export function replaceFont(Tmp_Text: Il2Cpp.Object) {
+    Il2Cpp.perform(()=>{
+        if(FontCache){
+            // const fontAsset = Tmp_Text.method<Il2Cpp.Object>('get_font').invoke();
+            // console.log(fontAsset)
+            // if(fontAsset) {
+                // fontAsset.method('set_sourceFontFile').invoke(FontCache);
+            //     fontAsset.method('UpdateFontAssetData').invoke()
+            // }
+            Tmp_Text.method('set_font').invoke(FontCache);
+        }
+        else{
+            console.log(Tmp_Text, ' No Font to replace')
+        }
+    })
+}
+
 export async function loadAdvTranData(advId : number): Promise<any> {
-    let uri = `${Config.currentConfig.TranslationPath.replace("{EPID}", advId.toString())}`
+    let uri = `${Config.currentConfig.EpisodeTranslationPath.replace("{EPID}", advId.toString())}`
     const url = Il2Cpp.string(uri);
 
     const instance = gameClass.UnityWebRequestModule.class("UnityEngine.Networking.UnityWebRequest")
@@ -72,12 +86,12 @@ export async function loadAdvTranData(advId : number): Promise<any> {
 
     //reset cache
     hasEpsiodeTranslation = false;
-    TranslationCache = [];
+    EpsiodeTranslationCache = [];
 
     //
     if(!cache.includes("Not Found")){
-        TranslationCache = parseCsvToJson(cache);
-        hasEpsiodeTranslation = (TranslationCache.length > 0);
+        EpsiodeTranslationCache = parseCsvToJson(cache);
+        hasEpsiodeTranslation = (EpsiodeTranslationCache.length > 0);
         console.log(`Loaded translation for Epsiode ${advId}`);
     }
 }
