@@ -17,9 +17,10 @@ export async function init(){
 
 // LoadFromFileAsync is not working...
 export async function loadFont(fontPath : string){
-    // let fontPath = `${Il2Cpp.application.dataPath}/il2cpp/Moded/${Config.currentConfig.fontAssetName}`;
+    // let fontPath = `${Il2Cpp.application.dataPath}/il2cpp/Moded/${Config.currentConfig.fontAssetName}.bundle`;
     if(gameClass.SysFile.method<boolean>("Exists", 1).invoke(Il2Cpp.string(fontPath))){
         console.log('Font Asset is Exist!!', fontPath)
+        
         let ab_req = gameClass.AssetBundle.method<Il2Cpp.Object>("LoadFromFileAsync", 1).invoke(Il2Cpp.string(fontPath));
         let ab = null;
         
@@ -47,23 +48,24 @@ export async function loadFont(fontPath : string){
     else{
         console.log("Can not find the File")
     }
+
+    //not working too..
+    // Il2Cpp.perform(() => {
+    //     SysOpenFile2Byte(fontPath, (bytes : Il2Cpp.Array<UInt64>)=>{
+    //         let abfilebytes = bytes;
+    //         let ab = gameClass.AssetBundle.method<Il2Cpp.Object>("LoadFromMemory").invoke(abfilebytes);
+    //         if (ab.isNull()) {
+    //             console.error("[LoadFromMemory] font load failed.", fontPath);
+    //             FontCache = null;
+    //         }
+    //         FontCache = ab.method<Il2Cpp.Object>("LoadAsset", 1).inflate(gameClass.TMP_FontAsset).invoke(Il2Cpp.string(`${Config.currentConfig.fontAssetName} SDF`));
+    //         console.log(FontCache);
+    //         ab.method("Unload", 1).invoke(false);
+    //     })
+    // })
 }
 
-//not working too..
-// Il2Cpp.perform(() => {
-//     let fontPath = `${Il2Cpp.application.dataPath}/il2cpp/Moded/${Config.currentConfig.fontAssetName}`;
-//     SysOpenFile2Byte(fontPath, (bytes : Il2Cpp.Array<UInt64>)=>{
-//         let abfilebytes = bytes;
-//         let ab = gameClass.AssetBundle.method<Il2Cpp.Object>("LoadFromMemory").invoke(abfilebytes);
-//         if (ab.isNull()) {
-//             console.error("[LoadFromMemory] font load failed.");
-//             FontCache = null;
-//         }
-//         FontCache = ab.method<Il2Cpp.Object>("LoadAsset", 1).inflate(gameClass.TMP_FontAsset).invoke(Il2Cpp.string(`${Config.currentConfig.fontAssetName} SDF`));
-//         console.log(FontCache);
-//         ab.method("Unload", 1).invoke(false);
-//     })
-// })
+
 
 export function replaceFont(Tmp_Text: Il2Cpp.Object) {
     Il2Cpp.perform(()=>{

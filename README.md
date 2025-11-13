@@ -2,6 +2,8 @@
 
 # WDS-Translation-Mod
 
+中文 | [English](readme_EN.md)
+
 使用frida實現對World Dai Star**安卓版本遊戲**的翻譯功能。
 
 </div>

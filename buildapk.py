@@ -33,26 +33,26 @@ inject_code = """invoke-direct {p0}, Lcom/unity3d/player/UnityPlayerActivity;-><
 """
 
 def download_apk():
-    print('Starting to download XAPK...')
+    print('[BUILD APK] Starting to download XAPK...')
     response = requests.get("https://d.cdnpure.com/b/XAPK/com.kms.worlddaistar?version=latest")
     with open("./apk/sirius.xapk", 'wb') as f:
         f.write(response.content)
 
 def unzip_apk(dirpath = './apk'):
-    print('Starting to unzip the XAPK...')
+    print('[BUILD APK] Starting to unzip the XAPK...')
     with ZipFile('./apk/sirius.xapk', 'r') as zip_file:
         zip_file.extractall(path=dirpath)    
 
 # Unpacking Packages
 def unpack_apk(target = dir_base_apk):
-    print('Starting to unpack the XAPK...')
+    print('[BUILD APK] Starting to unpack the XAPK...')
     subprocess.run(['java', '-jar', os.path.join(dir_tools, 'apktool.jar'), 'd', os.path.join('./apk', 'com.kms.worlddaistar.apk'), '-f', '-o', os.path.join(target, 'com.kms.worlddaistar')], check=True, shell=is_windows)
     subprocess.run(['java', '-jar', os.path.join(dir_tools, 'apktool.jar'), 'd', os.path.join('./apk', 'config.arm64_v8a.apk'), '-f', '-o', os.path.join(target, 'config.arm64_v8a')], check=True, shell=is_windows)
     subprocess.run(['java', '-jar', os.path.join(dir_tools, 'apktool.jar'), 'd', os.path.join('./apk', 'UnityDataAssetPack.apk'), '-f', '-o', os.path.join(target, 'UnityDataAssetPack')], check=True, shell=is_windows)
 
 # modfiy Packages / Injecting
 def modfiy_packages(target = dir_base_apk):
-    print('Starting to modfiy the packages...')
+    print('[BUILD APK] Starting to modfiy the packages...')
     target_smali = glob.glob(os.path.join(target, 'com.kms.worlddaistar', '*/com/kms/worlddaistar/UnityPlayerActivityOverride.smali'))[0]
     with open(target_smali, 'r+') as f:
         text = f.read()
@@ -73,7 +73,7 @@ def modfiy_packages(target = dir_base_apk):
     
 # Repacking Packages
 def repack_packages(inputdir=dir_base_apk, outputdir=dir_patched_apk):
-    print('Starting to repack the packages...')
+    print('[BUILD APK] Starting to repack the packages...')
     subprocess.run(['java', '-jar', os.path.join(dir_tools, 'apktool.jar'), 'b', os.path.join(inputdir, 'com.kms.worlddaistar'), '-o', os.path.join(outputdir, 'base_frida.apk')], check=True, shell=is_windows)
     subprocess.run(['java', '-jar', os.path.join(dir_tools, 'apktool.jar'), 'b', os.path.join(inputdir, 'config.arm64_v8a'), '-o', os.path.join(outputdir, 'config_frida.apk')], check=True, shell=is_windows)
     subprocess.run(['java', '-jar', os.path.join(dir_tools, 'apktool.jar'), 'b', os.path.join(inputdir, 'UnityDataAssetPack'), '-o', os.path.join(outputdir, 'unity.apk')], check=True, shell=is_windows)
@@ -86,7 +86,7 @@ def sign_apks(inputdir=dir_patched_apk, outputdir=dir_signed_apk):
     
 def chack_signer():
     if not os.path.exists(os.path.join(dir_tools, 'wds.keystore')):
-        print('Can not found the KEYSTORE in tools folder, Generate Now')
+        print('[BUILD APK] Can not found the KEYSTORE in tools folder, Generate Now')
         subprocess.run(['keytool', '-genkey', '-v', '-keystore', os.path.join(dir_tools, 'wds.keystore'), '-alias', 'wdskey', '-keyalg', 'RSA', '-keysize', '2048', '-validity', '10000', '-storepass', '123456', '-dname', 'CN=WDSModed,OU=WDSModed,O=WDSModed,L=WDSModed,S=WDSModed,C=WDSModed'])
 
 if __name__ == '__main__':
